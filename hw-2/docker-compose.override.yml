@@ -1,0 +1,46 @@
+version: '3.8'
+
+x-airflow-common:
+  &airflow-common
+  image: ${AIRFLOW_IMAGE_NAME:-extending_airflow:latest}
+  environment:
+    &airflow-common-env
+    AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+  volumes:
+    - ${AIRFLOW_PROJ_DIR:-.}/marketing_materials:/opt/airflow/marketing_materials
+
+services:
+  marketing-db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: marketing_db
+    restart: always
+    depends_on:
+      - postgres
+
+  airflow-init:
+    <<: *airflow-common
+    environment:
+      <<: *airflow-common-env
+  
+  airflow-scheduler:
+    <<: *airflow-common
+    environment:
+      <<: *airflow-common-env
+  
+  airflow-triggerer:
+    <<: *airflow-common
+    environment:
+      <<: *airflow-common-env
+  
+  airflow-webserver:
+    <<: *airflow-common
+    environment:
+      <<: *airflow-common-env
+  
+  airflow-worker:
+    <<: *airflow-common
+    environment:
+      <<: *airflow-common-env
